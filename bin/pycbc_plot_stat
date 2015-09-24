@@ -1,0 +1,93 @@
+#! /usr/bin/env python
+
+import argparse
+import glob
+import logging
+import sys
+import matplotlib as mpl; mpl.use('Agg')
+import matplotlib.pyplot as plt
+from glue.ligolw import ligolw
+from glue.ligolw import lsctables
+from glue.ligolw import table
+from glue.ligolw import utils
+
+class DefaultContentHandler(ligolw.LIGOLWContentHandler):
+    pass
+lsctables.use_in(DefaultContentHandler)
+
+def get_param_value_from_filename(filename):
+    return float(filename.split('/')[-1].split('-')[1].split('_')[-1])
+
+# usage
+parser = argparse.ArgumentParser(usage='pycbc_plot_stat \
+[--options]',
+                   description="Make single detector plot.")
+
+# input options
+parser.add_argument('--trigger-files', type=str, nargs='+',
+                  help='Input XML files with SnglInspiral triggers.')
+parser.add_argument('--output-file', type=str,
+                  help='Output xml file with playground segment triggers.')
+
+# trigger-finding options
+parser.add_argument('--trigger-end-time', type=int,
+                  help='Find triggers near this end time.')
+
+# plotting options
+parser.add_argument('--stat', type=str,
+                  help='What statistic to plot.')
+parser.add_argument('--param', type=str,
+                  help='What parameter to plot.')
+
+# parse command line
+opts = parser.parse_args()
+
+# setup log
+logging_level = logging.DEBUG
+logging.basicConfig(format='%(asctime)s : %(message)s', level=logging_level)
+
+stat = []
+param = []
+end_time = []
+
+# loop over trigger files
+for path in opts.trigger_files:
+
+    # load xml
+    logging.info('Reading trigger file...')
+    inspiral_xml = utils.load_filename(path,
+                                   contenthandler=DefaultContentHandler)
+
+    # get sngl_inspiral table
+    sngl_table = table.get_table(inspiral_xml,
+                             lsctables.SnglInspiralTable.tableName)
+
+    # get trigger for injection
+    for sngl in sngl_table:
+
+        # check if near time specified
+        if abs(sngl.end_time-opts.trigger_end_time) < 5:
+
+            # get stat
+            if opts.stat.lower() == 'snr':
+                stat.append(sngl.snr)
+            elif opts.stat.lower() == 'newsnr':
+                stat.append(sngl.get_new_snr())
+
+            # get param value from filename
+            param.append(get_param_value_from_filename(path))
+
+            # get end time
+            end_time.append(sngl.end_time + sngl.end_time_ns * 1e-9)
+
+# normalize stat
+stat_max = max(stat)
+stat = [i/stat_max for i in stat]
+
+for i in range(len(stat)):
+    print end_time[i], param[i], stat[i]
+
+plt.plot(param, stat)
+plt.ylabel(opts.stat)
+plt.xlabel(opts.param)
+plt.savefig(opts.output_file)

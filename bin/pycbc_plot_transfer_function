@@ -1,0 +1,54 @@
+#! /usr/bin/env python
+
+import matplotlib.pyplot as plt
+from calutils.cal import Calibration
+from calutils import transfer
+
+# initializations
+epoch_names = [
+'Epoch1_start_1102354676', 
+'Epoch2_1102354676_1102802992', 
+'Epoch3_1102802992_1102863616', 
+'Epoch4_1102863616_1112599154', 
+'Epoch5_1112599154_end'
+]
+
+# get transfer functions
+epochlist_A    = [transfer.zpk_file_to_array('../calibrationdata/ER6/'+name+'act_sys.txt') for name in epoch_names]
+epochlist_invC = [transfer.zpk_file_to_array('../calibrationdata/ER6/'+name+'invsens_sys.txt') for name in epoch_names]
+epochlist_D    = [transfer.zpk_file_to_array('../calibrationdata/ER6/'+name+'darm_sys.txt') for name in epoch_names]
+
+# set initial calibration for each epoch
+fc0list = [370.0, 370.0, 370.0, 370.0, 370.0]
+freqlist = [epochlist_invC[i][:, 0] for i in range(len(epoch_names))]
+cal_epochs = [Calibration(freq=freqlist[i], invC0=epochlist_invC[i][:, 1], D0=epochlist_D[i][:, 1], A0=epochlist_A[i][:, 1], fc0=fc0list[i]) for i in range(len(epoch_names))]
+
+# plot
+transfer.bode_plot([cal.freq for cal in cal_epochs], [cal.A0 for cal in cal_epochs], dB=False, degrees=True, unwrap=True, 
+        ylabel=r'$|A_0(f)|$', labels=['Epoch1', 'Epoch2', 'Epoch3', 'Epoch4', 'Epoch5'])
+plt.show()
+
+# plot
+transfer.bode_plot([cal.freq for cal in cal_epochs], [cal.C0 for cal in cal_epochs], dB=False, degrees=True, unwrap=True, 
+        ylabel=r'$|C_0(f)|$', labels=['Epoch1', 'Epoch2', 'Epoch3', 'Epoch4', 'Epoch5'])
+plt.show()
+
+# plot
+transfer.bode_plot([cal.freq for cal in cal_epochs], [cal.invC0 for cal in cal_epochs], dB=False, degrees=True, unwrap=True, 
+        ylabel=r'$|1/C_0(f)|$', labels=['Epoch1', 'Epoch2', 'Epoch3', 'Epoch4', 'Epoch5'])
+plt.show()
+
+# plot
+transfer.bode_plot([cal.freq for cal in cal_epochs], [cal.D0 for cal in cal_epochs], dB=False, degrees=True, unwrap=True, 
+        ylabel=r'$|D_0(f)|$', labels=['Epoch1', 'Epoch2', 'Epoch3', 'Epoch4', 'Epoch5'])
+plt.show()
+
+# plot
+transfer.bode_plot([cal.freq for cal in cal_epochs], [cal.G0 for cal in cal_epochs], dB=False, degrees=True, unwrap=False, 
+        ylabel=r'$|G_0(f)|$', labels=['Epoch1', 'Epoch2', 'Epoch3', 'Epoch4', 'Epoch5'])
+plt.show()
+
+# plot
+transfer.bode_plot([cal.freq for cal in cal_epochs], [cal.R0 for cal in cal_epochs], dB=False, degrees=True, unwrap=False, 
+        ylabel=r'$|R_0(f)|$', labels=['Epoch1', 'Epoch2', 'Epoch3', 'Epoch4', 'Epoch5'])
+plt.show()
