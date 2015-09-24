@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 import matplotlib.pyplot as plt
-from calutils.cal import Calibration
-from calutils import transfer
+from pycbc.calutils.cal import Calibration
+from pycbc.calutils import transfer
 
 # initializations
 epoch_names = [

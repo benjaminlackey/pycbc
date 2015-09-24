@@ -4,9 +4,9 @@ import argparse
 import logging
 import matplotlib as mpl; mpl.use('Agg')
 import matplotlib.pyplot as plt
-from calutils import transfer
-from calutils.adjust import adjust_strain_with_new_transfer_function
-from calutils.cal import Calibration
+from pycbc.calutils import transfer
+from pycbc.calutils.adjust import adjust_strain_with_new_transfer_function
+from pycbc.calutils.cal import Calibration
 from pycbc import DYN_RANGE_FAC
 from pycbc import strain as _strain
 from pycbc.frame import datafind_connection, read_frame, write_frame
