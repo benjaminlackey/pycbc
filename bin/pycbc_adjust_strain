@@ -27,8 +27,12 @@ parser.add_argument('--delta-fc', type=float, required=True,
                   help='Change in the cavity pole frequency.')
 parser.add_argument('--kappa-tst', type=float, required=True,
                   help='New gain in the test mass actuation function A_tst (initially 1.0 at t_0).')
+parser.add_argument('--kappa-tstim', type=float, required=True,
+                  help='New imaginary part of gain in the test mass actuation function A_tst (initially 0.0 at t_0).')
 parser.add_argument('--kappa-pu', type=float, required=True,
                   help='New gain in the combined actuation function A_pu of the upper stages UIM and PUM (initially 1.0 at t_0).')
+parser.add_argument('--kappa-puim', type=float, required=True,
+                  help='New imaginary part of gain in the actuation function A_pu (initially 0.0 at t_0).')
 parser.add_argument('--kappa-c', type=float, required=True,
                   help='New gain in the sensing function C (initially 1.0 at t_0).')
 
@@ -81,7 +85,10 @@ strain = _strain.from_cli(opts)
 
 # adjust strain
 logging.info('Adjusting strain')
-strain_adjusted = adjust_strain_with_new_transfer_function(strain, cal, deltafc=opts.delta_fc, kc=opts.kappa_c, ktst=opts.kappa_tst, kpu=opts.kappa_pu, plots=False)
+strain_adjusted = adjust_strain_with_new_transfer_function(strain, cal, 
+                    deltafc=opts.delta_fc, kc=opts.kappa_c, 
+                    ktst=opts.kappa_tst, ktstim=opts.kappa_tstim, 
+                    kpu=opts.kappa_pu, kpuim=opts.kappa_puim, plots=False)
 
 # plot
 if opts.output_image:
