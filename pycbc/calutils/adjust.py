@@ -7,7 +7,7 @@ import scipy
 from pycbc.fft.fftw import set_measure_level
 set_measure_level(0)
 
-def adjust_strain_with_new_transfer_function(strain, cal, deltafc=0.0, kc=1.0, ktst=1.0, kpu=1.0, plots=None):
+def adjust_strain_with_new_transfer_function(strain, cal, deltafc=0.0, kc=1.0, ktst=1.0, kpu=1.0, ktstim=0.0, kpuim=0.0, plots=None):
     """Adjust the TimeSeries strain by changing the time-dependent calibration parameters
     kappa_C(t), kappa_A(t), and \Delta f_c(t) = f_c(t) - f_c(t_0).
     
@@ -22,9 +22,13 @@ def adjust_strain_with_new_transfer_function(strain, cal, deltafc=0.0, kc=1.0, k
     kc : float
         Scalar correction factor for sensing function C0 at time t
     ktst : float
-        Scalar correction factor for actuation function Atst0 at time t
+        Real part of scalar correction factor for actuation function Atst0 at time t
     kpu : float
-        Scalar correction factor for actuation function Apu0 at time t
+        Real part of scalar correction factor for actuation function Apu0 at time t
+    ktstim : float
+        Imaginary part of scalar correction factor for actuation function Atst0 at time t
+    kpuim : float
+        Imaginary part of scalar correction factor for actuation function Apu0 at time t
     plots : bool
         Make plots.
     
@@ -41,7 +45,7 @@ def adjust_strain_with_new_transfer_function(strain, cal, deltafc=0.0, kc=1.0, k
 
     # Get the 'true' and 'adjusted' transfer functions
     Rtrue = cal.R0
-    Radjusted = cal.update_R(deltafc=deltafc, kc=kc, ktst=ktst, kpu=kpu)
+    Radjusted = cal.update_R(deltafc=deltafc, kc=kc, ktst=ktst, kpu=kpu, ktstim=ktstim, kpuim=kpuim)
 
     # Get the error function to apply to the strain in the frequency-domain
     K = Radjusted/Rtrue

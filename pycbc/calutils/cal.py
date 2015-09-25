@@ -73,7 +73,7 @@ class Calibration:
         fc = self.fc0 + deltafc
         return self.Cres * kc/(1+1.0j*self.freq/fc)
     
-    def update_G(self, deltafc=0.0, kc=1.0, ktst=1.0, kpu=1.0):
+    def update_G(self, deltafc=0.0, kc=1.0, ktst=1.0, kpu=1.0, ktstim=0.0, kpuim=0.0):
         """Calculate the open loop gain G(f,t) given the new parameters 
         kappa_C(t), kappa_A(t), and \Delta f_c(t) = f_c(t) - f_c(t_0)
         
@@ -84,9 +84,13 @@ class Calibration:
         kc : float
             Scalar correction factor for sensing function C at time t
         ktst : float
-            Scalar correction factor for actuation function Atst0 at time t
+            Real part of scalar correction factor for actuation function Atst0 at time t
         kpu : float
-            Scalar correction factor for actuation function Apu0 at time t
+            Real part of scalar correction factor for actuation function Apu0 at time t
+        ktstim : float
+            Imaginary part of scalar correction factor for actuation function Atst0 at time t
+        kpuim : float
+            Imaginary part of scalar correction factor for actuation function Apu0 at time t
         
         Returns
         -------
@@ -95,11 +99,11 @@ class Calibration:
         """
         
         C = self.update_C(deltafc=deltafc, kc=kc)
-        A = self.Atst0 * ktst + self.Apu0 * kpu
+        A = self.Atst0 * (ktst+1.0j*ktstim) + self.Apu0 * (kpu+1.0j*kpuim)
         return C * self.D0 * A
 
     
-    def update_R(self, deltafc=0.0, kc=1.0, ktst=1.0, kpu=1.0):
+    def update_R(self, deltafc=0.0, kc=1.0, ktst=1.0, kpu=1.0, ktstim=0.0, kpuim=0.0):
         """Calculate the response function R(f,t) given the new parameters 
         kappa_C(t), kappa_A(t), and \Delta f_c(t) = f_c(t) - f_c(t_0)
         
@@ -110,10 +114,14 @@ class Calibration:
         kc : float
             Scalar correction factor for sensing function at time t
         ktst : float
-            Scalar correction factor for actuation function Atst0 at time t
+            Real part of scalar correction factor for actuation function Atst0 at time t
         kpu : float
-            Scalar correction factor for actuation function Apu0 at time t
-        
+            Real part of scalar correction factor for actuation function Apu0 at time t
+        ktstim : float
+            Imaginary part of scalar correction factor for actuation function Atst0 at time t
+        kpuim : float
+            Imaginary part of scalar correction factor for actuation function Apu0 at time t
+
         Returns
         -------
         R : array
@@ -121,6 +129,6 @@ class Calibration:
         """
         
         C = self.update_C(deltafc=deltafc, kc=kc)
-        G = self.update_G(deltafc=deltafc, kc=kc, ktst=ktst, kpu=kpu)
+        G = self.update_G(deltafc=deltafc, kc=kc, ktst=ktst, kpu=kpu, ktstim=ktstim, kpuim=kpuim)
         
         return (1.0 + G) / C
