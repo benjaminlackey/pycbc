@@ -81,6 +81,7 @@ cal = Calibration(freq=freqlist, C0=epochlist_C[:, 1], D0=epochlist_D[:, 1], Ats
 
 # get strain from frame files
 # 'from command line interface'
+# This will also add injections if you provide an xml injection file as one of the command line options
 strain = _strain.from_cli(opts)
 
 # adjust strain
