@@ -453,8 +453,8 @@ setup (
                'bin/hdfcoinc/pycbc_merge_psds',
                'bin/hdfcoinc/pycbc_plot_gating',
                'bin/pycbc_make_cal_workflow_all_params',
-               'bin/pycbc_make_cal_workflow_kappatst_highres'
-               'bin/pycbc_adjust_strain
+               'bin/pycbc_make_cal_workflow_kappatst_highres',
+               'bin/pycbc_adjust_strain'
                ],
     packages = [
                'pycbc',
