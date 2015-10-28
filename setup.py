@@ -451,7 +451,9 @@ setup (
                'bin/pygrb/pycbc_make_offline_grb_workflow',
                'bin/pygrb/pycbc_make_grb_summary_page',
                'bin/hdfcoinc/pycbc_merge_psds',
-               'bin/hdfcoinc/pycbc_plot_gating'
+               'bin/hdfcoinc/pycbc_plot_gating',
+               'bin/pycbc_make_cal_workflow_all_params',
+               'bin/pycbc_make_cal_workflow_kappatst_highres'
                ],
     packages = [
                'pycbc',
@@ -467,6 +469,7 @@ setup (
                'pycbc.workflow',
                'pycbc.results',
                'pycbc.io',
+               'pycbc.calutils'
                ],
      package_data = {'pycbc.workflow': find_package_data('pycbc/workflow'), 
 	             'pycbc.results': find_package_data('pycbc/results'),
